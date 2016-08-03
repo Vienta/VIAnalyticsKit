@@ -18,34 +18,51 @@
 
 + (void)load
 {
-    SEL originalSEL = @selector(imageNamed:);
-    SEL swizzledSEL = @selector(vi_imageNamed:);
+    //Exchange imageNamed: implementation
+    Method imageNameOriginalMethod = class_getClassMethod([self class], @selector(imageNamed:));
+    Method imageNameSwizzledMethod = class_getClassMethod([self class], @selector(vi_imageNamed:));
     
-    Method originalMethod = class_getClassMethod([self class], originalSEL);
-    Method swizzledMethod = class_getClassMethod([self class], swizzledSEL);
+    method_exchangeImplementations(imageNameOriginalMethod, imageNameSwizzledMethod);
+
+    //Exchange initWithCoder: implementation in order to get the resource file
+    Method initWithCoderOriginalMethod = class_getInstanceMethod(NSClassFromString(@"UIImageNibPlaceholder"), @selector(initWithCoder:));
+    Method initWithCoderSwizzledMethod = class_getInstanceMethod([self class], @selector(vi_initWithCoder:));
     
-    method_exchangeImplementations(originalMethod, swizzledMethod);
+    method_exchangeImplementations(initWithCoderOriginalMethod, initWithCoderSwizzledMethod);
     
-    SEL originalSEL1 = @selector(initWithCoder:);
-    SEL swizzledSEL1 = @selector(vi_initWithCoder:);
+//    imageWithContentsOfFile
+    Method imageWithContentsOfFileOriginalMethod = class_getClassMethod([self class], @selector(imageWithContentsOfFile:));
+    Method imageWithContentsOfFileSwizzledMethod = class_getClassMethod([self class], @selector(vi_imageWithContentsOfFile:));
     
-    Method originalMethod1 = class_getInstanceMethod([self class], originalSEL1);
-    Method swizzledMethod1 = class_getInstanceMethod([self class], swizzledSEL1);
-    
-    method_exchangeImplementations(originalMethod1, swizzledMethod1);
+    method_exchangeImplementations(imageWithContentsOfFileOriginalMethod, imageWithContentsOfFileSwizzledMethod);
 }
 
 - (id)vi_initWithCoder:(NSCoder *)aDecoder
 {
-    UIImageView *aSelf = [self vi_initWithCoder:aDecoder];
+    UIImage *image = [self vi_initWithCoder:aDecoder];
     
-    return aSelf;
+    NSString *resourceName = [aDecoder decodeObjectForKey:@"UIResourceName"];
+    if ([resourceName isKindOfClass:[NSString class]] && resourceName) {
+        image.imageName = resourceName;
+    }
+    return image;
 }
 
 + (nullable UIImage *)vi_imageNamed:(NSString *)name
 {
     UIImage *image = [UIImage vi_imageNamed:name];
     image.imageName = name;
+    
+    return image;
+}
+
++ (nullable UIImage *)vi_imageWithContentsOfFile:(NSString *)path
+{
+    UIImage *image = [UIImage vi_imageWithContentsOfFile:path];
+    
+    NSURL *urlPath = [NSURL fileURLWithPath:path];
+    NSString *imageName = [[urlPath.lastPathComponent componentsSeparatedByString:@"."] firstObject];
+    image.imageName = imageName;
     
     return image;
 }
@@ -66,36 +83,18 @@
 
 @implementation UIImageView (imageName)
 
-+ (void)load
-{
-    SEL originalSEL = @selector(setImage:);
-    SEL swizzledSEL = @selector(vi_setImage:);
-    
-    Method originalMethod = class_getInstanceMethod([self class], originalSEL);
-    Method swizzledMethod = class_getInstanceMethod([self class], swizzledSEL);
-    
-    method_exchangeImplementations(originalMethod, swizzledMethod);
-    
-    SEL originalSEL1 = @selector(initWithCoder:);
-    SEL swizzledSEL1 = @selector(vi_initWithCoder:);
-    
-    Method originalMethod1 = class_getInstanceMethod([self class], originalSEL1);
-    Method swizzledMethod1 = class_getInstanceMethod([self class], swizzledSEL1);
-    
-    method_exchangeImplementations(originalMethod1, swizzledMethod1);
-}
-
-- (id)vi_initWithCoder:(NSCoder *)aDecoder
-{
-    UIImageView *aSelf = [self vi_initWithCoder:aDecoder];
-    
-    return aSelf;
-}
-
-- (void)vi_setImage:(UIImage *)image
-{
-    [self vi_setImage:image];
-    self.image.imageName = image.imageName;
-}
+//+ (void)load
+//{
+//    Method originalMethod = class_getInstanceMethod([self class], @selector(setImage:));
+//    Method swizzledMethod = class_getInstanceMethod([self class], @selector(vi_setImage:));
+//    
+//    method_exchangeImplementations(originalMethod, swizzledMethod);
+//}
+//
+//- (void)vi_setImage:(UIImage *)image
+//{
+//    [self vi_setImage:image];
+//    self.image.imageName = image.imageName;
+//}
 
 @end

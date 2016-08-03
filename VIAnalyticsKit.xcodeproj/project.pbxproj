@@ -316,6 +316,7 @@
 				B36C867C1D520CDD0009DC8B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
