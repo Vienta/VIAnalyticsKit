@@ -7,8 +7,11 @@
 //
 
 #import "ViewController.h"
+#import "VIAnalyticsAOP.h"
 
 @interface ViewController ()
+
+@property (weak, nonatomic) IBOutlet UIImageView *imageView;
 
 @end
 
@@ -17,6 +20,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+//    UIImage *image = [UIImage imageNamed:@"liveshre_QQ"];
+//    NSLog(@"image name:%@", image.imageName);
+//    NSLog(@"image %@:", image);
+//    [self.imageView setImage:image];
+    NSLog(@"imageview.image %@ imageName:%@", self.imageView.image, self.imageView.image.imageName);
+    
+//    [self.imageView setImage:[UIImage imageNamed:@"liveshre_QQ"]];
+//    NSLog(@"self.imageView.image.imageName:%@", self.imageView.image.imageName);    
 }
 
 - (void)didReceiveMemoryWarning {

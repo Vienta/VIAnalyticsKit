@@ -13,6 +13,7 @@
 		B36C86711D520CDD0009DC8B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B36C866F1D520CDD0009DC8B /* Main.storyboard */; };
 		B36C86731D520CDD0009DC8B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B36C86721D520CDD0009DC8B /* Assets.xcassets */; };
 		B36C86761D520CDD0009DC8B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B36C86741D520CDD0009DC8B /* LaunchScreen.storyboard */; };
+		B36C86801D520D2D0009DC8B /* VIAnalyticsAOP.m in Sources */ = {isa = PBXBuildFile; fileRef = B36C867F1D520D2D0009DC8B /* VIAnalyticsAOP.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,8 @@
 		B36C86721D520CDD0009DC8B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B36C86751D520CDD0009DC8B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B36C86771D520CDD0009DC8B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B36C867E1D520D2D0009DC8B /* VIAnalyticsAOP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VIAnalyticsAOP.h; sourceTree = "<group>"; };
+		B36C867F1D520D2D0009DC8B /* VIAnalyticsAOP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VIAnalyticsAOP.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +61,7 @@
 		B36C86651D520CDD0009DC8B /* VIAnalyticsKit */ = {
 			isa = PBXGroup;
 			children = (
+				B36C867D1D520CEC0009DC8B /* Class */,
 				B36C86691D520CDD0009DC8B /* AppDelegate.h */,
 				B36C866A1D520CDD0009DC8B /* AppDelegate.m */,
 				B36C866C1D520CDD0009DC8B /* ViewController.h */,
@@ -77,6 +81,15 @@
 				B36C86671D520CDD0009DC8B /* main.m */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B36C867D1D520CEC0009DC8B /* Class */ = {
+			isa = PBXGroup;
+			children = (
+				B36C867E1D520D2D0009DC8B /* VIAnalyticsAOP.h */,
+				B36C867F1D520D2D0009DC8B /* VIAnalyticsAOP.m */,
+			);
+			path = Class;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -151,6 +164,7 @@
 			files = (
 				B36C866E1D520CDD0009DC8B /* ViewController.m in Sources */,
 				B36C866B1D520CDD0009DC8B /* AppDelegate.m in Sources */,
+				B36C86801D520D2D0009DC8B /* VIAnalyticsAOP.m in Sources */,
 				B36C86681D520CDD0009DC8B /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
