@@ -11,10 +11,16 @@
 
 @interface VIAnalyticsAOP : NSObject
 
+@end
 
+@interface UIControl (AOP)
 
 @end
 
+
+@interface UIGestureRecognizer (AOP)
+
+@end
 
 
 @interface UIImage (imageName)
@@ -23,6 +29,4 @@
 
 @end
 
-@interface UIImageView (imageName)
 
-@end

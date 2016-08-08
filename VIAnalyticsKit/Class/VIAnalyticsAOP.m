@@ -8,8 +8,79 @@
 
 #import "VIAnalyticsAOP.h"
 #import <objc/runtime.h>
+#import <objc/message.h>
 
 @implementation VIAnalyticsAOP
+
+@end
+
+@implementation UIControl (AOP)
+
++ (void)load
+{
+    Method initOriginalMethod = class_getInstanceMethod([self class], @selector(sendAction:to:forEvent:));
+    Method initSwizzledMethod = class_getInstanceMethod([self class], @selector(vi_sendAction:to:forEvent:));
+    
+    method_exchangeImplementations(initOriginalMethod, initSwizzledMethod);
+}
+
+- (void)vi_sendAction:(SEL)action to:(id)target forEvent:(UIEvent *)event
+{
+    [self vi_sendAction:action to:target forEvent:event];
+    NSLog(@"uicontrol action:%@", NSStringFromSelector(action));
+}
+
+@end
+
+
+
+//@interface UIGestureRecognizer (AOP)
+//
+//@end
+@implementation UIGestureRecognizer (AOP)
+
++ (void)load
+{
+    Method initOriginalMethod = class_getInstanceMethod([self class], @selector(initWithTarget:action:));
+    Method initSwizzledMethod = class_getInstanceMethod([self class], @selector(vi_initWithTarget:action:));
+    
+    method_exchangeImplementations(initOriginalMethod, initSwizzledMethod);
+}
+
+- (instancetype)vi_initWithTarget:(nullable id)target action:(nullable SEL)action
+{
+    UIGestureRecognizer *selfGestureRecognizer = [self vi_initWithTarget:target action:action];
+    
+    if (!target && !action) {
+        return selfGestureRecognizer;
+    }
+    
+    Class class = [target class];
+    
+    SEL originalSEL = action;
+    SEL swizzledSEL = NSSelectorFromString([NSString stringWithFormat:@"vi_%@", NSStringFromSelector(action)]);
+    
+    BOOL isAddMethod = class_addMethod(class, swizzledSEL, (IMP)vi_gestureAction, "v@:@");
+    NSLog(@"isAddMethod:%@", @(isAddMethod));
+    if (isAddMethod) {
+        Method originalMethod = class_getInstanceMethod(class, originalSEL);
+        Method swizzledMethod = class_getInstanceMethod(class, swizzledSEL);
+        
+        method_exchangeImplementations(originalMethod, swizzledMethod);
+    }
+
+    
+    
+    return selfGestureRecognizer;
+}
+
+void vi_gestureAction(id self, SEL _cmd, id sender) {
+    NSLog(@"cmd:%@", NSStringFromSelector(_cmd));
+    SEL swizzledSEL = NSSelectorFromString([NSString stringWithFormat:@"vi_%@", NSStringFromSelector(_cmd)]);
+    ((void(*)(id, SEL, id))objc_msgSend)(self, swizzledSEL, sender);
+}
+
+
 
 @end
 
@@ -30,7 +101,7 @@
     
     method_exchangeImplementations(initWithCoderOriginalMethod, initWithCoderSwizzledMethod);
     
-//    imageWithContentsOfFile
+    //Exchange imageWithContentsOfFile: implementation
     Method imageWithContentsOfFileOriginalMethod = class_getClassMethod([self class], @selector(imageWithContentsOfFile:));
     Method imageWithContentsOfFileSwizzledMethod = class_getClassMethod([self class], @selector(vi_imageWithContentsOfFile:));
     
@@ -77,24 +148,5 @@
 {
     objc_setAssociatedObject(self, @selector(imageName), imageName, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
-
-@end
-
-
-@implementation UIImageView (imageName)
-
-//+ (void)load
-//{
-//    Method originalMethod = class_getInstanceMethod([self class], @selector(setImage:));
-//    Method swizzledMethod = class_getInstanceMethod([self class], @selector(vi_setImage:));
-//    
-//    method_exchangeImplementations(originalMethod, swizzledMethod);
-//}
-//
-//- (void)vi_setImage:(UIImage *)image
-//{
-//    [self vi_setImage:image];
-//    self.image.imageName = image.imageName;
-//}
 
 @end
