@@ -22,7 +22,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     NSLog(@"imageview.image %@ imageName:%@", self.imageView.image, self.imageView.image.imageName);
-    UITapGestureRecognizer *tapGes = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(imageViewTapped)];
+    UITapGestureRecognizer *tapGes = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(imageViewPan)];
     [self.imageView addGestureRecognizer:tapGes];
     
     UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -30,6 +30,8 @@
     btn.backgroundColor = [UIColor redColor];
     [self.view addSubview:btn];
     [btn addTarget:self action:@selector(btnTap:) forControlEvents:UIControlEventTouchUpInside];
+    
+    
 }
 
 - (void)btnTap:(id)sender

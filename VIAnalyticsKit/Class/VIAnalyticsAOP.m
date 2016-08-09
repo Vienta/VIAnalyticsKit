@@ -12,6 +12,22 @@
 
 @implementation VIAnalyticsAOP
 
++ (instancetype)sharedInstance
+{
+    static VIAnalyticsAOP *_sharedInstance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _sharedInstance = [[self alloc]init];
+    });
+
+    return _sharedInstance;
+}
+
+- (void)vi_analyticsSource:(id)source action:(SEL)action target:(id)target
+{
+    NSLog(@"~~~analytics source:%@ action:%@ target:%@",source, NSStringFromSelector(action), target);
+}
+
 @end
 
 @implementation UIControl (AOP)
@@ -27,7 +43,7 @@
 - (void)vi_sendAction:(SEL)action to:(id)target forEvent:(UIEvent *)event
 {
     [self vi_sendAction:action to:target forEvent:event];
-    NSLog(@"uicontrol action:%@", NSStringFromSelector(action));
+    [[VIAnalyticsAOP sharedInstance] vi_analyticsSource:self action:action target:target];
 }
 
 @end
@@ -69,9 +85,9 @@
 }
 
 void vi_gestureAction(id self, SEL _cmd, id sender) {
-    NSLog(@"cmd:%@", NSStringFromSelector(_cmd));
     SEL swizzledSEL = NSSelectorFromString([NSString stringWithFormat:@"vi_%@", NSStringFromSelector(_cmd)]);
     ((void(*)(id, SEL, id))objc_msgSend)(self, swizzledSEL, sender);
+    [[VIAnalyticsAOP sharedInstance] vi_analyticsSource:sender action:_cmd target:self];
 }
 
 
@@ -204,6 +220,39 @@ void vi_didSelectItemAtIndexPath(id self, SEL _cmd, id collectionView, id indexP
 - (void)setImageName:(NSString *)imageName
 {
     objc_setAssociatedObject(self, @selector(imageName), imageName, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+@end
+
+
+@implementation UIViewController (TopMostViewController)
+
+- (UIViewController *)topMostViewController
+{
+    if (self.presentedViewController == nil) {
+        
+        return self;
+        
+    } else if ([self.presentedViewController isKindOfClass:[UINavigationController class]]) {
+        
+        UINavigationController *navigationController = (UINavigationController *)self.presentedViewController;
+        UIViewController *lastViewController = [[navigationController viewControllers] lastObject];
+        
+        return [lastViewController topMostViewController];
+    }
+    
+    UIViewController *presentedViewController = (UIViewController *)self.presentedViewController;
+    
+    return [presentedViewController topMostViewController];
+}
+
+@end
+
+@implementation UIApplication (TopMostViewController)
+
+- (UIViewController *)topMostViewController
+{
+    return [self.keyWindow.rootViewController topMostViewController];
 }
 
 @end

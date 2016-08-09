@@ -11,7 +11,17 @@
 
 @interface VIAnalyticsAOP : NSObject
 
+@property (weak, nonatomic) id delegate;
+@property (copy, nonatomic) void (^analyticsIdentifierBlock)(NSString *identifier);
+
++ (instancetype)sharedInstance;
+
 @end
+
+
+
+
+
 
 @interface UIControl (AOP)
 
@@ -34,6 +44,19 @@
 @interface UIImage (imageName)
 
 @property (nonatomic, copy) NSString *imageName;
+
+@end
+
+@interface UIViewController (TopMostViewController)
+
+- (UIViewController *)topMostViewController;
+
+@end
+
+
+@interface UIApplication (TopMostViewController)
+
+- (UIViewController *)topMostViewController;
 
 @end
 
