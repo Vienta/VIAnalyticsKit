@@ -33,10 +33,6 @@
 @end
 
 
-
-//@interface UIGestureRecognizer (AOP)
-//
-//@end
 @implementation UIGestureRecognizer (AOP)
 
 + (void)load
@@ -61,7 +57,7 @@
     SEL swizzledSEL = NSSelectorFromString([NSString stringWithFormat:@"vi_%@", NSStringFromSelector(action)]);
     
     BOOL isAddMethod = class_addMethod(class, swizzledSEL, (IMP)vi_gestureAction, "v@:@");
-    NSLog(@"isAddMethod:%@", @(isAddMethod));
+
     if (isAddMethod) {
         Method originalMethod = class_getInstanceMethod(class, originalSEL);
         Method swizzledMethod = class_getInstanceMethod(class, swizzledSEL);
@@ -69,8 +65,6 @@
         method_exchangeImplementations(originalMethod, swizzledMethod);
     }
 
-    
-    
     return selfGestureRecognizer;
 }
 
@@ -81,6 +75,69 @@ void vi_gestureAction(id self, SEL _cmd, id sender) {
 }
 
 
+
+@end
+
+
+@implementation UITableView (AOP)
+
++ (void)load
+{
+    Method delegateOriginalMethod = class_getInstanceMethod([self class], @selector(setDelegate:));
+    Method delegateSwizzledMethod = class_getInstanceMethod([self class], @selector(vi_setDelegate:));
+    
+    method_exchangeImplementations(delegateOriginalMethod, delegateSwizzledMethod);
+}
+
+- (void)vi_setDelegate:(id<UITableViewDelegate>)delegate
+{
+    [self vi_setDelegate:delegate];
+    
+    if (class_addMethod([self class], NSSelectorFromString(@"vi_didSelectRowAtIndexPath"), (IMP)vi_didSelectRowAtIndexPath, "v@:@@")) {
+        Method didSelectOriginalMethod = class_getInstanceMethod([self class], NSSelectorFromString(@"vi_didSelectRowAtIndexPath"));
+        Method didSelectSwizzledMethod = class_getInstanceMethod([self class], @selector(tableView:didSelectRowAtIndexPath:));
+        
+        method_exchangeImplementations(didSelectOriginalMethod, didSelectSwizzledMethod);
+    }
+}
+
+void vi_didSelectRowAtIndexPath(id self, SEL _cmd, id tableView, id indexPath)
+{
+    NSLog(@"cmd:%@", NSStringFromSelector(_cmd));
+    SEL selector = NSSelectorFromString(@"vi_didSelectRowAtIndexPath");
+    ((void(*)(id, SEL, id, id))objc_msgSend)(self, selector, tableView, indexPath);
+}
+
+@end
+
+@implementation UICollectionView (AOP)
+
++ (void)load
+{
+    Method originalMethod = class_getInstanceMethod([self class], @selector(setDelegate:));
+    Method swizzledMethod = class_getInstanceMethod([self class], @selector(vi_setDelegate:));
+    
+    method_exchangeImplementations(originalMethod, swizzledMethod);
+}
+
+- (void)vi_setDelegate:(id<UICollectionViewDelegate>)delegate
+{
+    [self vi_setDelegate:delegate];
+    
+    if (class_addMethod([self class], NSSelectorFromString(@"vi_didSelectItemAtIndexPath"), (IMP)vi_didSelectItemAtIndexPath, "v@:@@")) {
+        Method didSelectOriginalMethod = class_getInstanceMethod([self class], NSSelectorFromString(@"vi_didSelectItemAtIndexPath"));
+        Method didSelectSwizzledMethod = class_getInstanceMethod([self class], @selector(collectionView:didSelectItemAtIndexPath:));
+        
+        method_exchangeImplementations(didSelectOriginalMethod, didSelectSwizzledMethod);
+    }
+}
+
+void vi_didSelectItemAtIndexPath(id self, SEL _cmd, id collectionView, id indexPath)
+{
+    NSLog(@"cmd:%@", NSStringFromSelector(_cmd));
+    SEL selector = NSSelectorFromString(@"vi_didSelectItemAtIndexPath");
+    ((void(*)(id, SEL, id, id))objc_msgSend)(self, selector, collectionView, indexPath);
+}
 
 @end
 

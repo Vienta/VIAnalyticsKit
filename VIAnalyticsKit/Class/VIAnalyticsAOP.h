@@ -22,6 +22,14 @@
 
 @end
 
+@interface UITableView (AOP)
+
+@end
+
+@interface UICollectionView (AOP)
+
+@end
+
 
 @interface UIImage (imageName)
 
