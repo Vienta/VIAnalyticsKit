@@ -32,11 +32,29 @@
     [btn addTarget:self action:@selector(btnTap:) forControlEvents:UIControlEventTouchUpInside];
     
     
+    
 }
+
 
 - (void)btnTap:(id)sender
 {
-    [self imageViewTapped];
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"标题"
+                                                                                 message:@"测试点击事件" preferredStyle:UIAlertControllerStyleAlert];
+        
+        
+        UIAlertAction *action1 = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            NSLog(@"点击确定");
+        }];
+        
+        UIAlertAction *action2 = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            NSLog(@"点击取消");
+        }];
+        
+        [alertController addAction:action1];
+        [alertController addAction:action2];
+        
+        [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)imageViewPan
