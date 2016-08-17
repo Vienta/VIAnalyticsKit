@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "VIAnalyticsAOP.h"
+#import "View2Controller.h"
 
 @interface ViewController ()
 
@@ -21,7 +22,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    NSLog(@"imageview.image %@ imageName:%@", self.imageView.image, self.imageView.image.imageName);
     UITapGestureRecognizer *tapGes = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(imageViewPan)];
     [self.imageView addGestureRecognizer:tapGes];
     
@@ -44,11 +44,11 @@
         
         
         UIAlertAction *action1 = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            NSLog(@"点击确定");
+//            NSLog(@"点击确定");
         }];
         
         UIAlertAction *action2 = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            NSLog(@"点击取消");
+//            NSLog(@"点击取消");
         }];
         
         [alertController addAction:action1];
@@ -59,23 +59,25 @@
 
 - (void)imageViewPan
 {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
-    [self imageViewTapped];
+//    NSLog(@"%s", __PRETTY_FUNCTION__);1
+//    [self imageViewTapped];
+    View2Controller *v2 = [[View2Controller alloc] initWithNibName:@"View2Controller" bundle:nil];
+    [self.navigationController pushViewController:v2 animated:YES];
 }
 
 - (void)dddd
 {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
+//    NSLog(@"%s", __PRETTY_FUNCTION__);
 }
 
 - (void)imageViewTapped
 {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
+//    NSLog(@"%s", __PRETTY_FUNCTION__);
 }
 
 - (void)imageViewLongPress
 {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
+//    NSLog(@"%s", __PRETTY_FUNCTION__);
 }
 
 - (IBAction)btnTapped:(id)sender {

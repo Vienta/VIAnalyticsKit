@@ -23,12 +23,172 @@
     return _sharedInstance;
 }
 
+- (id)displayIdentifier:(id)source
+{
+    if ([source isKindOfClass:[UIView class]]) {
+        for (UIView *next = [source superview]; next; next = next.superview) {
+            UIResponder *nextResponder = [next nextResponder];
+            if ([nextResponder isKindOfClass:[UIViewController class]]) {
+
+                return (id)nextResponder;
+            }
+        }
+    } else if ([source isKindOfClass:[UIGestureRecognizer class]]) {
+        UIGestureRecognizer *gestureSource = (UIGestureRecognizer *)source;
+        if ([gestureSource.view isKindOfClass:[NSClassFromString(@"_UIAlertControllerView") class]]) {
+            return gestureSource.view;
+        }
+        
+        return [self displayIdentifier:gestureSource.view];
+    }
+    
+    return nil;
+}
+
+//viewController_UIControl_action_target
 - (void)vi_analyticsSource:(id)source action:(SEL)action target:(id)target
 {
-    NSLog(@"~~~analytics source:%@ action:%@ target:%@",source, NSStringFromSelector(action), target);
+    NSMutableString *identifierString = [[NSMutableString alloc] init];
+    
+    if ([target isKindOfClass:[NSClassFromString(@"_UIAlertControllerView") class]]) {
+        
+        Ivar ivar = class_getInstanceVariable([target class], "_actionViews");
+        NSMutableArray *actionviews =  object_getIvar(target, ivar);
+        UIGestureRecognizer *gesture = source;
+        
+        for (UIView *subview in actionviews) { /*_UIAlertControllerActionView*/
+            CGPoint point = [gesture locationInView:subview];
+            
+            if (point.x >= 0 && point.x <= CGRectGetWidth(subview.bounds) &&
+                point.y >= 0 && point.y <= CGRectGetHeight(subview.bounds) && gesture.state == UIGestureRecognizerStateEnded) {
+               
+                UILabel *titleLabel = [subview performSelector:@selector(titleLabel)];
+
+                if (NSStringFromClass([[self displayIdentifier:source] class])) {
+                    [identifierString appendString:NSStringFromClass([[self displayIdentifier:source] class])];
+                }
+                if (NSStringFromClass([source class])) {
+                    [identifierString appendString:[NSString stringWithFormat:@"#%@",NSStringFromClass([source class])]];
+                }
+                if (titleLabel.text) {
+                    [identifierString appendString:[NSString stringWithFormat:@"#%@",titleLabel.text]];
+                }
+                if (NSStringFromSelector(action)) {
+                    [identifierString appendString:[NSString stringWithFormat:@"#%@",NSStringFromSelector(action)]];
+                }
+                if (NSStringFromClass([target class])) {
+                    [identifierString appendString:[NSString stringWithFormat:@"#%@",NSStringFromClass([target class])]];
+                }
+                
+                
+                if (self.analyticsIdentifierBlock) {
+                    self.analyticsIdentifierBlock(identifierString);
+                }
+            }
+        }
+        
+    } else {
+    
+        NSString *titleString = nil;
+        NSString *imageNameString = nil;
+        
+        if ([source isKindOfClass:[UIButton class]]) {
+            
+            UIButton *btn = (UIButton *)source;
+            
+            titleString = btn.currentTitle;
+            imageNameString = btn.currentImage.imageName;
+            
+        } else if ([source isKindOfClass:[UIGestureRecognizer class]]) {
+            
+            UIGestureRecognizer *gestureRecognizer = (UIGestureRecognizer *)source;
+            
+            if (gestureRecognizer.state == UIGestureRecognizerStateChanged || gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+                return;
+            }
+            
+            if ([gestureRecognizer.view isKindOfClass:[UIImageView class]] ) {
+                
+                UIImageView *imageView = (UIImageView *)gestureRecognizer.view;
+                imageNameString = imageView.image.imageName;
+            }
+        }
+        
+        if (NSStringFromClass([[self displayIdentifier:source] class])) {
+            [identifierString appendString:NSStringFromClass([[self displayIdentifier:source] class])];
+        }
+        if (NSStringFromClass([source class])) {
+            [identifierString appendString:[NSString stringWithFormat:@"#%@",NSStringFromClass([source class])]];
+        }
+        if (titleString) {
+            [identifierString appendString:[NSString stringWithFormat:@"#%@",titleString]];
+        }
+        if (imageNameString) {
+            [identifierString appendString:[NSString stringWithFormat:@"#%@",imageNameString]];
+        }
+        if (NSStringFromSelector(action)) {
+            [identifierString appendString:[NSString stringWithFormat:@"#%@",NSStringFromSelector(action)]];
+        }
+        if (NSStringFromClass([target class])) {
+            [identifierString appendString:[NSString stringWithFormat:@"#%@",NSStringFromClass([target class])]];
+        }
+        
+        if (self.analyticsIdentifierBlock) {
+            self.analyticsIdentifierBlock(identifierString);
+        }
+    }
+    
+//    NSLog(@"~~~analytics source:%@ action:%@ target:%@",source, NSStringFromSelector(action), target);
+  
+}
+
+- (void)vi_analyticsSource:(id)source didSelectIndexPath:(NSIndexPath *)idxPath target:(id)target
+{
+    NSString *idxPathString = [NSString stringWithFormat:@"%@-%@", @(idxPath.section), @(idxPath.row)];
+    NSMutableString *identifierString = [[NSMutableString alloc] init];
+    if (NSStringFromClass([[self displayIdentifier:source] class])) {
+        [identifierString appendString:NSStringFromClass([[self displayIdentifier:source] class])];
+    }
+    
+    if (NSStringFromClass([source class])) {
+        [identifierString appendString:[NSString stringWithFormat:@"#%@",NSStringFromClass([source class])]];
+    }
+  
+    if (idxPathString) {
+        [identifierString appendString:[NSString stringWithFormat:@"#%@",idxPathString]];
+    }
+   
+    if (NSStringFromClass([target class])) {
+        [identifierString appendString:[NSString stringWithFormat:@"#%@",NSStringFromClass([target class])]];
+    }
+
+    if (self.analyticsIdentifierBlock) {
+        self.analyticsIdentifierBlock(identifierString);
+    }
 }
 
 @end
+
+@implementation UIAlertAction (AOP)
+
++ (void)load
+{
+    Method originalMethod = class_getClassMethod([self class], @selector(actionWithTitle:style:handler:));
+    Method swizzledMethod = class_getClassMethod([self class], @selector(vi_actionWithTitle:style:handler:));
+    
+    method_exchangeImplementations(originalMethod, swizzledMethod);
+}
+
++ (instancetype)vi_actionWithTitle:(nullable NSString *)title style:(UIAlertActionStyle)style handler:(void (^ __nullable)(UIAlertAction *action))handler
+{
+    UIAlertAction *alertAction = [[self class] vi_actionWithTitle:title style:style handler:handler];
+    return alertAction;
+}
+
+@end
+
+
+
 
 @implementation UIControl (AOP)
 
@@ -48,6 +208,44 @@
 
 @end
 
+/*
+@implementation UIBarButtonItem (AOP)
+
++ (void)load
+{
+    Method originalMethod = class_getInstanceMethod([self class], @selector(setAction:));
+    Method swizzledMethod = class_getInstanceMethod([self class], @selector(vi_setAction:));
+    
+    method_exchangeImplementations(originalMethod, swizzledMethod);
+}
+
+- (void)vi_setAction:(SEL)action
+{
+    [self vi_setAction:action];
+    
+    SEL originalSEL = action;
+    SEL swizzledSEL = NSSelectorFromString([NSString stringWithFormat:@"vi_setAction:"]);
+    
+    BOOL isAddMethod = class_addMethod([self class], swizzledSEL, (IMP)vi_barButtonItemAction, "v@:@");
+    
+    if (isAddMethod) {
+        Method originalMethod = class_getInstanceMethod([self class], originalSEL);
+        Method swizzledMethod = class_getInstanceMethod([self class], swizzledSEL);
+        
+        method_exchangeImplementations(originalMethod, swizzledMethod);
+    }
+    
+}
+
+void vi_barButtonItemAction(id self, SEL _cmd, id sender) {
+    SEL swizzledSEL = NSSelectorFromString([NSString stringWithFormat:@"vi_%@", NSStringFromSelector(_cmd)]);
+    ((void(*)(id, SEL, id))objc_msgSend)(self, swizzledSEL, sender);
+    [[VIAnalyticsAOP sharedInstance] vi_analyticsSource:sender action:_cmd target:self];
+}
+
+@end
+
+*/
 
 @implementation UIGestureRecognizer (AOP)
 
@@ -109,9 +307,9 @@ void vi_gestureAction(id self, SEL _cmd, id sender) {
 {
     [self vi_setDelegate:delegate];
     
-    if (class_addMethod([self class], NSSelectorFromString(@"vi_didSelectRowAtIndexPath"), (IMP)vi_didSelectRowAtIndexPath, "v@:@@")) {
-        Method didSelectOriginalMethod = class_getInstanceMethod([self class], NSSelectorFromString(@"vi_didSelectRowAtIndexPath"));
-        Method didSelectSwizzledMethod = class_getInstanceMethod([self class], @selector(tableView:didSelectRowAtIndexPath:));
+    if (class_addMethod([delegate class], NSSelectorFromString(@"vi_didSelectRowAtIndexPath"), (IMP)vi_didSelectRowAtIndexPath, "v@:@@")) {
+        Method didSelectOriginalMethod = class_getInstanceMethod([delegate class], NSSelectorFromString(@"vi_didSelectRowAtIndexPath"));
+        Method didSelectSwizzledMethod = class_getInstanceMethod([delegate class], @selector(tableView:didSelectRowAtIndexPath:));
         
         method_exchangeImplementations(didSelectOriginalMethod, didSelectSwizzledMethod);
     }
@@ -119,9 +317,9 @@ void vi_gestureAction(id self, SEL _cmd, id sender) {
 
 void vi_didSelectRowAtIndexPath(id self, SEL _cmd, id tableView, id indexPath)
 {
-    NSLog(@"cmd:%@", NSStringFromSelector(_cmd));
     SEL selector = NSSelectorFromString(@"vi_didSelectRowAtIndexPath");
     ((void(*)(id, SEL, id, id))objc_msgSend)(self, selector, tableView, indexPath);
+    [[VIAnalyticsAOP sharedInstance] vi_analyticsSource:tableView didSelectIndexPath:indexPath target:self];
 }
 
 @end
@@ -140,9 +338,9 @@ void vi_didSelectRowAtIndexPath(id self, SEL _cmd, id tableView, id indexPath)
 {
     [self vi_setDelegate:delegate];
     
-    if (class_addMethod([self class], NSSelectorFromString(@"vi_didSelectItemAtIndexPath"), (IMP)vi_didSelectItemAtIndexPath, "v@:@@")) {
-        Method didSelectOriginalMethod = class_getInstanceMethod([self class], NSSelectorFromString(@"vi_didSelectItemAtIndexPath"));
-        Method didSelectSwizzledMethod = class_getInstanceMethod([self class], @selector(collectionView:didSelectItemAtIndexPath:));
+    if (class_addMethod([delegate class], NSSelectorFromString(@"vi_didSelectItemAtIndexPath"), (IMP)vi_didSelectItemAtIndexPath, "v@:@@")) {
+        Method didSelectOriginalMethod = class_getInstanceMethod([delegate class], NSSelectorFromString(@"vi_didSelectItemAtIndexPath"));
+        Method didSelectSwizzledMethod = class_getInstanceMethod([delegate class], @selector(collectionView:didSelectItemAtIndexPath:));
         
         method_exchangeImplementations(didSelectOriginalMethod, didSelectSwizzledMethod);
     }
@@ -150,9 +348,9 @@ void vi_didSelectRowAtIndexPath(id self, SEL _cmd, id tableView, id indexPath)
 
 void vi_didSelectItemAtIndexPath(id self, SEL _cmd, id collectionView, id indexPath)
 {
-    NSLog(@"cmd:%@", NSStringFromSelector(_cmd));
     SEL selector = NSSelectorFromString(@"vi_didSelectItemAtIndexPath");
     ((void(*)(id, SEL, id, id))objc_msgSend)(self, selector, collectionView, indexPath);
+    [[VIAnalyticsAOP sharedInstance] vi_analyticsSource:collectionView didSelectIndexPath:indexPath target:self];
 }
 
 @end

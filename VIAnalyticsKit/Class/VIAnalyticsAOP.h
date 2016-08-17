@@ -18,12 +18,20 @@
 
 @end
 
+@interface UIAlertAction (AOP)
+
+@end
 
 
 @interface UIControl (AOP)
 
 @end
 
+/*
+@interface UIBarButtonItem (AOP)
+
+@end
+*/
 
 @interface UIGestureRecognizer (AOP)
 

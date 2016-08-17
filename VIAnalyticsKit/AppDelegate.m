@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "VIAnalyticsAOP.h"
 
 @interface AppDelegate ()
 
@@ -17,6 +18,12 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    [VIAnalyticsAOP sharedInstance].analyticsIdentifierBlock = ^(NSString *identifier) {
+        NSLog(@"aop:::%@", identifier);
+    };
+    
+    
     return YES;
 }
 

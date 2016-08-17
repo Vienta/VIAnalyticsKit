@@ -14,6 +14,8 @@
 		B36C86731D520CDD0009DC8B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B36C86721D520CDD0009DC8B /* Assets.xcassets */; };
 		B36C86761D520CDD0009DC8B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B36C86741D520CDD0009DC8B /* LaunchScreen.storyboard */; };
 		B36C86801D520D2D0009DC8B /* VIAnalyticsAOP.m in Sources */ = {isa = PBXBuildFile; fileRef = B36C867F1D520D2D0009DC8B /* VIAnalyticsAOP.m */; };
+		B3DA7EB31D64065C008FEA26 /* View2Controller.m in Sources */ = {isa = PBXBuildFile; fileRef = B3DA7EB11D64065C008FEA26 /* View2Controller.m */; };
+		B3DA7EB41D64065C008FEA26 /* View2Controller.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3DA7EB21D64065C008FEA26 /* View2Controller.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +31,9 @@
 		B36C86771D520CDD0009DC8B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B36C867E1D520D2D0009DC8B /* VIAnalyticsAOP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VIAnalyticsAOP.h; sourceTree = "<group>"; };
 		B36C867F1D520D2D0009DC8B /* VIAnalyticsAOP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VIAnalyticsAOP.m; sourceTree = "<group>"; };
+		B3DA7EB01D64065C008FEA26 /* View2Controller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = View2Controller.h; sourceTree = "<group>"; };
+		B3DA7EB11D64065C008FEA26 /* View2Controller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = View2Controller.m; sourceTree = "<group>"; };
+		B3DA7EB21D64065C008FEA26 /* View2Controller.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = View2Controller.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +72,9 @@
 				B36C866C1D520CDD0009DC8B /* ViewController.h */,
 				B36C866D1D520CDD0009DC8B /* ViewController.m */,
 				B36C866F1D520CDD0009DC8B /* Main.storyboard */,
+				B3DA7EB01D64065C008FEA26 /* View2Controller.h */,
+				B3DA7EB11D64065C008FEA26 /* View2Controller.m */,
+				B3DA7EB21D64065C008FEA26 /* View2Controller.xib */,
 				B36C86721D520CDD0009DC8B /* Assets.xcassets */,
 				B36C86741D520CDD0009DC8B /* LaunchScreen.storyboard */,
 				B36C86771D520CDD0009DC8B /* Info.plist */,
@@ -150,6 +158,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B36C86761D520CDD0009DC8B /* LaunchScreen.storyboard in Resources */,
+				B3DA7EB41D64065C008FEA26 /* View2Controller.xib in Resources */,
 				B36C86731D520CDD0009DC8B /* Assets.xcassets in Resources */,
 				B36C86711D520CDD0009DC8B /* Main.storyboard in Resources */,
 			);
@@ -165,6 +174,7 @@
 				B36C866E1D520CDD0009DC8B /* ViewController.m in Sources */,
 				B36C866B1D520CDD0009DC8B /* AppDelegate.m in Sources */,
 				B36C86801D520D2D0009DC8B /* VIAnalyticsAOP.m in Sources */,
+				B3DA7EB31D64065C008FEA26 /* View2Controller.m in Sources */,
 				B36C86681D520CDD0009DC8B /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
