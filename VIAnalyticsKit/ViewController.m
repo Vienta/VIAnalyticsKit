@@ -32,9 +32,7 @@
     [btn addTarget:self action:@selector(btnTap:) forControlEvents:UIControlEventTouchUpInside];
     
     
-    
 }
-
 
 - (void)btnTap:(id)sender
 {

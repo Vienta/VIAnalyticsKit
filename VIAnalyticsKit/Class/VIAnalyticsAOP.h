@@ -27,12 +27,6 @@
 
 @end
 
-/*
-@interface UIBarButtonItem (AOP)
-
-@end
-*/
-
 @interface UIGestureRecognizer (AOP)
 
 @end
@@ -49,6 +43,10 @@
 @interface UIImage (imageName)
 
 @property (nonatomic, copy) NSString *imageName;
+
+@end
+
+@interface UIViewController (AOP)
 
 @end
 
