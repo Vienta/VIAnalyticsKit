@@ -130,7 +130,7 @@
             [identifierString appendString:[NSString stringWithFormat:@"#%@",imageNameString]];
         }
         if (backgroundImageName) {
-            [identifierString appendString:[NSString stringWithFormat:@"%@", backgroundImageName]];
+            [identifierString appendString:[NSString stringWithFormat:@"#%@", backgroundImageName]];
         }
         if (NSStringFromSelector(action)) {
             [identifierString appendString:[NSString stringWithFormat:@"#%@",NSStringFromSelector(action)]];
