@@ -92,6 +92,7 @@
     
         NSString *titleString = nil;
         NSString *imageNameString = nil;
+        NSString *backgroundImageName = nil;
         
         if ([source isKindOfClass:[UIButton class]]) {
             
@@ -99,6 +100,7 @@
             
             titleString = btn.currentTitle;
             imageNameString = btn.currentImage.imageName;
+            backgroundImageName = btn.currentBackgroundImage.imageName;
             
         } else if ([source isKindOfClass:[UIGestureRecognizer class]]) {
             
@@ -126,6 +128,9 @@
         }
         if (imageNameString) {
             [identifierString appendString:[NSString stringWithFormat:@"#%@",imageNameString]];
+        }
+        if (backgroundImageName) {
+            [identifierString appendString:[NSString stringWithFormat:@"%@", backgroundImageName]];
         }
         if (NSStringFromSelector(action)) {
             [identifierString appendString:[NSString stringWithFormat:@"#%@",NSStringFromSelector(action)]];
