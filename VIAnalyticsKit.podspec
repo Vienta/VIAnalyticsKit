@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "VIAnalyticsKit"
-  s.version      = "0.0.1"
+  s.version      = "0.0.2"
   s.summary      = "VIAnalyticsKit is an open source software framework that makes it easy to catch the action log in application."
 
   # This description is used to generate tags and improve search results.
