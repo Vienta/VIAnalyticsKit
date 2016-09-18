@@ -94,6 +94,7 @@
         NSString *imageNameString = nil;
         NSString *backgroundImageName = nil;
         NSString *selectStateString = nil;
+        NSString *tagString = nil;
         
         if ([source isKindOfClass:[UIButton class]]) {
             
@@ -103,6 +104,7 @@
             imageNameString = btn.currentImage.imageName;
             backgroundImageName = btn.currentBackgroundImage.imageName;
             selectStateString = [NSString stringWithFormat:@"isSelectState_%@", @(btn.selected)];
+            tagString = [NSString stringWithFormat:@"tag_%@", @(btn.tag)];
             
         } else if ([source isKindOfClass:[UIGestureRecognizer class]]) {
             
@@ -136,6 +138,9 @@
         }
         if (selectStateString) {
             [identifierString appendString:[NSString stringWithFormat:@"#%@", selectStateString]];
+        }
+        if (tagString) {
+            [identifierString appendString:[NSString stringWithFormat:@"#%@", tagString]];
         }
         if (NSStringFromSelector(action)) {
             [identifierString appendString:[NSString stringWithFormat:@"#%@",NSStringFromSelector(action)]];
