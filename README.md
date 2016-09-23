@@ -1,6 +1,8 @@
 # VIAnalyticsKit
 
  **VIAnalyticsKit** is an open source software framework that makes it easy to catch the user's interaction in application.Whatever UIButton's target-action,UIAlertController's select item,UITableView/UICollectionView's `didSelectRowAtIndexPath`,or UIGestureRecognizer's gestures,this framework can catch these events.
+ 
+[**VIAnalyticsKit**是以AOP进行埋点的，中文文章有解释说明](http://www.vienta.me/2016/09/21/AOP%E5%9C%A8iOS%E4%B8%AD%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B8%80%E7%BB%9F%E8%AE%A1%E5%9F%8B%E7%82%B9/)
 
 It can be use for data collection and analysis.
 
