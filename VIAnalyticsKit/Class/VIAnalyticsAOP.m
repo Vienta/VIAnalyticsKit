@@ -51,7 +51,52 @@
 {
     NSMutableString *identifierString = [[NSMutableString alloc] init];
     
-    if ([target isKindOfClass:[NSClassFromString(@"_UIAlertControllerView") class]]) {
+    if ([target isKindOfClass:[NSClassFromString(@"UIInterfaceActionSelectionTrackingController") class]]) {//iOS10 UIAlertController内部实现变了，所以写成这样
+        Ivar ivar = class_getInstanceVariable([target class], "_representationViews");
+        NSMutableArray *representationViews =  object_getIvar(target, ivar);
+        UIGestureRecognizer *gesture = source;
+        
+        for (UIView *representationView in representationViews) {
+            
+            CGPoint point = [gesture locationInView:representationView];
+            
+            if (point.x >= 0 && point.x <= CGRectGetWidth(representationView.bounds) &&
+                point.y >= 0 && point.y <= CGRectGetHeight(representationView.bounds) &&
+                gesture.state == UIGestureRecognizerStateEnded) {
+                
+                Ivar ivar = class_getInstanceVariable([representationView class], "_actionContentView");
+                id actionContentView = object_getIvar(representationView, ivar);
+                
+                Ivar labelIvar = class_getInstanceVariable([actionContentView class], "_label");
+                UILabel *label = object_getIvar(actionContentView, labelIvar);
+                
+                if (NSStringFromClass([[self displayIdentifier:source] class])) {
+                    [identifierString appendString:NSStringFromClass([[self displayIdentifier:source] class])];
+                }
+                if ([[self displayIdentifier:source] isKindOfClass:[UIAlertController class]]) {
+                    id viewControllerUnderAlertController = [[[UIApplication sharedApplication] currentViewController] topMostViewController];
+                    [identifierString appendFormat:[NSString stringWithFormat:@"#%@",NSStringFromClass([viewControllerUnderAlertController class])]];
+                }
+                if (NSStringFromClass([source class])) {
+                    [identifierString appendString:[NSString stringWithFormat:@"#%@",NSStringFromClass([source class])]];
+                }
+                if (label.text) {
+                    [identifierString appendString:[NSString stringWithFormat:@"#%@",label.text]];
+                }
+                if (NSStringFromSelector(action)) {
+                    [identifierString appendString:[NSString stringWithFormat:@"#%@",NSStringFromSelector(action)]];
+                }
+                if (NSStringFromClass([target class])) {
+                    [identifierString appendString:[NSString stringWithFormat:@"#%@",NSStringFromClass([target class])]];
+                }
+                
+                if (self.analyticsIdentifierBlock) {
+                    self.analyticsIdentifierBlock(identifierString);
+                }
+            }
+        }
+        
+    } else if ([target isKindOfClass:[NSClassFromString(@"_UIAlertControllerView") class]]) {
         
         Ivar ivar = class_getInstanceVariable([target class], "_actionViews");
         NSMutableArray *actionviews =  object_getIvar(target, ivar);
@@ -68,6 +113,10 @@
 
                 if (NSStringFromClass([[self displayIdentifier:source] class])) {
                     [identifierString appendString:NSStringFromClass([[self displayIdentifier:source] class])];
+                }
+                if ([[self displayIdentifier:source] isKindOfClass:[NSClassFromString(@"_UIAlertControllerView") class]]) {
+                    id viewControllerUnderAlertController = [[[UIApplication sharedApplication] currentViewController] topMostViewController];
+                    [identifierString appendFormat:[NSString stringWithFormat:@"#%@",NSStringFromClass([viewControllerUnderAlertController class])]];
                 }
                 if (NSStringFromClass([source class])) {
                     [identifierString appendString:[NSString stringWithFormat:@"#%@",NSStringFromClass([source class])]];
@@ -455,7 +504,7 @@ void vi_didSelectItemAtIndexPath(id self, SEL _cmd, id collectionView, id indexP
 
 - (UIViewController *)topMostViewController
 {
-    if (self.presentedViewController == nil) {
+    if (self.presentedViewController == nil || [self.presentedViewController isKindOfClass:[UIImagePickerController class]]) {
         
         return self;
         
@@ -480,5 +529,34 @@ void vi_didSelectItemAtIndexPath(id self, SEL _cmd, id collectionView, id indexP
 {
     return [self.keyWindow.rootViewController topMostViewController];
 }
+
+- (UIViewController *)currentViewController
+{
+    UIViewController *result = nil;
+    
+    UIWindow * window = [[UIApplication sharedApplication] keyWindow];
+    if (window.windowLevel != UIWindowLevelNormal) {
+        NSArray *windows = [[UIApplication sharedApplication] windows];
+        for(UIWindow * tmpWin in windows) {
+            if (tmpWin.windowLevel == UIWindowLevelNormal) {
+                window = tmpWin;
+                break;
+            }
+        }
+    }
+    
+    UIView *frontView = [[window subviews] objectAtIndex:0];
+    id nextResponder = [frontView nextResponder];
+    
+    if ([nextResponder isKindOfClass:[UIViewController class]]) {
+        result = nextResponder;
+    } else {
+        result = window.rootViewController;
+    }
+    
+    return result;
+}
+
+
 
 @end

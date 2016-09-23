@@ -60,6 +60,7 @@
 @interface UIApplication (TopMostViewController)
 
 - (UIViewController *)topMostViewController;
+- (UIViewController *)currentViewController;
 
 @end
 
