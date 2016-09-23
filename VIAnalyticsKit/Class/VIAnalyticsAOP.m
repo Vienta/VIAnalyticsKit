@@ -75,7 +75,7 @@
                 }
                 if ([[self displayIdentifier:source] isKindOfClass:[UIAlertController class]]) {
                     id viewControllerUnderAlertController = [[[UIApplication sharedApplication] currentViewController] topMostViewController];
-                    [identifierString appendFormat:[NSString stringWithFormat:@"#%@",NSStringFromClass([viewControllerUnderAlertController class])]];
+                    [identifierString appendString:[NSString stringWithFormat:@"#%@",NSStringFromClass([viewControllerUnderAlertController class])]];
                 }
                 if (NSStringFromClass([source class])) {
                     [identifierString appendString:[NSString stringWithFormat:@"#%@",NSStringFromClass([source class])]];
@@ -116,7 +116,7 @@
                 }
                 if ([[self displayIdentifier:source] isKindOfClass:[NSClassFromString(@"_UIAlertControllerView") class]]) {
                     id viewControllerUnderAlertController = [[[UIApplication sharedApplication] currentViewController] topMostViewController];
-                    [identifierString appendFormat:[NSString stringWithFormat:@"#%@",NSStringFromClass([viewControllerUnderAlertController class])]];
+                    [identifierString appendString:[NSString stringWithFormat:@"#%@",NSStringFromClass([viewControllerUnderAlertController class])]];
                 }
                 if (NSStringFromClass([source class])) {
                     [identifierString appendString:[NSString stringWithFormat:@"#%@",NSStringFromClass([source class])]];
